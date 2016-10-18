@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.tmpl.min.js"></script>
+    <script type="text/javascript" src="../js/knockout-3.4.0.js"></script>
+    <title>第一章：入门</title>
+</head>
+<body>
+选择套餐：
+<select data-bind="options:availableMeals,
+	optionsText:'mealName',
+	value:chosenMeal"></select>
+<p><br/>
+您的选择是：<b data-bind="text:chosenMeal().description"></b><br/>
+单价：<b data-bind="text:chosenMeal().extraCost"></b><br/>
+格式化的单价：<b data-bind="text:formatPrice( chosenMeal().extraCost )"></b><br/>
+</p>
+<p>根据条件判断按钮是否可点：</p><br/>
+<button data-bind="enable:chosenMeal().extraCost<10">不到十块钱，真是超值啊</button>
+
+<p>
+<code>
+…除非你想使用模板绑定功能（您很有可能使用它，因为非常有用），那你需要再引用两个JavaScript文件。 KO1.3版的默认模板引擎是依赖jQuery 的jquery.tmpl.js（最新版2.0版已经不依赖jquery tmp了）。所以你需要下载下面的2个文件并在引用KO之前引用：
+<br/>
+jQuery 1.4.2 或更高版本<br/>
+jquery-tmpl.js — 此版本 可以很容易使用，或者你访问官方网站 查找最新版本。<br/>
+正确的引用顺序：<br/>
+<script type='text/javascript' src='jquery-1.4.2.min.js'></script>
+<script type='text/javascript' src='jquery-tmpl.js'></script>
+<script type='text/javascript' src='knockout-1.2.1.js'></script>
+</code>
+</p>
+
+<!-- 
+将select值的变化写入chosenMeal这个模型属性。
+ -->
+<script type="text/javascript">
+var availableMeals = [
+	{ mealName: 'Standard', description: 'Dry crusts of bread', extraCost: 0 },
+	{ mealName: 'Premium', description: 'Fresh bread with cheese', extraCost: 9.95 },
+	{ mealName: 'Deluxe', description: 'Caviar and vintage Dr Pepper', extraCost: 18.50 }
+];
+var viewModel={
+	//o.observable是什么？它是KO里的一个基础概念。UI可以监控（observe）它的值并且回应它的变化。
+	chosenMeal:ko.observable(availableMeals[0])
+};
+$(function(){
+	//注意：ko. applyBindings需要在上述HTML之后应用才有效
+	ko.applyBindings(viewModel);
+});
+function formatPrice(price) {
+    return price == 0 ? "Free" : "$" + price.toFixed(2);
+}
+</script>
+</body>
+</html>
