@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../js/knockout-3.4.0.js"></script>
+    <title>第三章：绑定语法（2）</title>
+</head>
+<body>
+7.click绑定<br/>
+点击无参数<br/>点击带参数<br/>
+访问事件源对象(有些情况，你可能需要使用事件源对象，Knockout会将这个对象传递到你函数的第一个参数)
+<mark>带事件源对象有问题，event.shiftKey一直是undefined</mark><br/>
+访问事件源对象（使用匿名函数）<mark>带事件源对象有问题，event.shiftKey一直是undefined</mark><br/>
+<b>注3：</b>允许执行默认事件
+Knockout会阻止冒泡，防止默认的事件继续执行。例如，如果你点击一个a连接，在执行完自定义事件时它不会连接到href地址。这特别有用是因为你的自定义事件主要就是操作你的view model，而不是连接到另外一个页面。
+<br/>
+当然，如果你想让默认的事件继续执行，你可以在你click的自定义函数里返回true。<br/>
+<b>注4：</b>控制this句柄<br/>
+这个比较复杂，没看懂。<a href="http://www.cnblogs.com/TomXu/archive/2011/11/24/2256878.html" target="_blank">控制this句柄</a>
+<br/>
+<b>注5：</b>防止事件冒泡<br/>
+默认情况下，Knockout允许click事件继续在更高一层的事件句柄上冒泡执行。例如，如果你的元素和父元素都绑定了click事件，那当你点击该元素的时候两个事件都会触发的。如果需要，你可以通过额外的绑定clickBubble来禁止冒泡。<br/>
+这样myButtonHandler执行了click之后，会防止事件冒泡，myDivHandler不会执行。
+<textarea readonly="readonly" rows="6" cols="100">
+<div data-bind="click: myDivHandler">
+    <button data-bind="click: myButtonHandler, clickBubble: false">
+        Click me
+    </button>
+</div>
+</textarea>
+
+
+
+
+
+
+<div>您已经点击了<b data-bind="text:numberOfClicks"></b>次
+<button data-bind="click:incrementClickCounter">点击无参数</button>
+<button data-bind="click:function(){
+	viewModel.incrementClickCounter('111','222');
+	}">点击带参数</button>
+<button data-bind="click:clickWithEvent">点击带事件源对象</button>
+<button data-bind="click:function(event){
+		viewModel.clickWithEvent(event);
+	}">点击带事件源对象（利用匿名函数方式）</button>
+</div>
+
+
+
+<script type="text/javascript">
+var viewModel={
+	numberOfClicks : ko.observable(0),
+	incrementClickCounter:function(parm1, parm2){
+		console.log("接收到的参数1=" + parm1 + ";接收到的参数2=" + parm2);
+		var preCount = this.numberOfClicks();
+		this.numberOfClicks(preCount+1);
+	},
+	clickWithEvent:function(event){
+		console.log(event.shiftKey);
+		if(event.shiftKey){
+			console.log("shift is down.");
+		}else{
+			console.log("shift is not down.");
+		}
+	}
+};
+$(function(){
+	ko.applyBindings(viewModel);
+});
+</script>
+</body>
+</html>
