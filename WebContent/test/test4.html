@@ -3,56 +3,93 @@
 <head>
     <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="../js/knockout-3.4.0.js"></script>
-    <title>第一章：入门</title>
+    <title>第三章：绑定语法（1）</title>
 </head>
 <body>
-选择套餐：
-<select data-bind="options:availableMeals,
-	optionsText:'mealName',
-	value:chosenMeal"></select>
-<p><br/>
-您的选择是：<b data-bind="text:chosenMeal().description"></b><br/>
-单价：<b data-bind="text:chosenMeal().extraCost"></b><br/>
-格式化的单价：<b data-bind="text:formatPrice( chosenMeal().extraCost )"></b><br/>
-</p>
-<p>根据条件判断按钮是否可点：</p><br/>
-<button data-bind="enable:chosenMeal().extraCost<10">不到十块钱，真是超值啊</button>
+1.visible绑定<br/>
+<div data-bind="visible:showMsg">是否显示本消息</div>
+<button onclick="showOrHide(true)">显示</button>
+<button onclick="showOrHide(false)">不显示</button>
+<div data-bind="visible:myValues().length>0">当数组长度大于0的时候显示(3s后自动显示)</div>
+<br/>
+2.text绑定
+<div data-bind="text:showMsg"></div>
+简单的条件判断可以用这种写法，如果复杂可以用一个方法来代替（监控属性一章中有例子）。
+<div data-bind="text:showMsg()==true?'是真的':'假的'"></div>
+<br/>
+3.html绑定（这个有可能导致脚本攻击）
+<div data-bind="html:details"></div>
+4.css绑定：添加或者删除一个或者多个CSS class到DOM元素上。<br/>
+这里可以设置多个css样式，例如下面的divColor和divFont。可以在class名称的外面加上单引号。
+<style>
+.divColor{
+	color:red;
+}
+.divFont{
+	font-size:25px;
+}
+</style>
+<div data-bind="css:{ divColor :useCss()>0, 'divFont':useCss()>0 }">是否使用css的绑定</div>
+5.style绑定：添加或者删除一个或者多个DOM元素上的style值。<br/>
+<div data-bind="style : {color:useStyle()<0?'red':'green', 'text-decoration':'underline' }">style 绑定</div>
+<mark>注意：</mark>
+text-decoration不是合法的JavaScript变量命名，如果要直接使用需要加上单引号。<br/>
+或者使用合法的JavaScript名称textDecoration。
+<a href="http://www.comptechdoc.org/independent/web/cgi/javamanual/javastyle.html" target="_blank">style名称和对应的JavaScript 名称列表</a>
+<br/>
+6.attr绑定<br/>
+attr绑定提供了一种方式可以设置DOM元素的任意属性值。可以设置img的src属性，连接的href属性，当modelView发生改变的时候，他会自动更新。
+<br/>
+同理，最好在href和title的两边添加上单引号。
+<br/>
+<a data-bind="attr: { href:aHref, title:aTitle }" target="_blank">一个会自动更新的超链接</a>
 
-<p>
-…除非你想使用模板绑定功能（您很有可能使用它，因为非常有用），那你需要再引用两个JavaScript文件。 KO1.3版的默认模板引擎是依赖jQuery 的jquery.tmpl.js（最新版2.0版已经不依赖jquery tmp了）。
+
+
+
+
+
+
+
+
 <br/>
-所以你需要下载下面的2个文件并在引用KO之前引用：
-<br/>
-jQuery 1.4.2 或更高版本<br/>
-jquery-tmpl.js — 此版本 可以很容易使用，或者你访问官方网站 查找最新版本。<br/>
-正确的引用顺序：<br/>
-</p>
-<textarea readonly='readonly' cols="100" rows="5">
-<script type='text/javascript' src='jquery-1.4.2.min.js'></script>
-<script type='text/javascript' src='jquery-tmpl.js'></script>
-<script type='text/javascript' src='knockout-1.2.1.js'></script>
+<textarea readonly='readonly' cols="100" rows="20">
+1.
+visible:showMsg
+当showMsg位false、0、null、undefined时，那么该元素会隐藏。
 </textarea>
 
-<!-- 
-将select值的变化写入chosenMeal这个模型属性。
- -->
+
 <script type="text/javascript">
-var availableMeals = [
-	{ mealName: 'Standard', description: 'Dry crusts of bread', extraCost: 0 },
-	{ mealName: 'Premium', description: 'Fresh bread with cheese', extraCost: 9.95 },
-	{ mealName: 'Deluxe', description: 'Caviar and vintage Dr Pepper', extraCost: 18.50 }
-];
 var viewModel={
-	//o.observable是什么？它是KO里的一个基础概念。UI可以监控（observe）它的值并且回应它的变化。
-	chosenMeal:ko.observable(availableMeals[0])
+	showMsg:ko.observable(true),
+	myValues:ko.observableArray([]),
+	details:ko.observable(),
+	useCss:ko.observable(-1),
+	useStyle:ko.observable(-1),
+	aHref:ko.observable('http://www.baidu.com'),
+	aTitle:ko.observable('本来是百度呢。'),
 };
 $(function(){
-	//注意：ko. applyBindings需要在上述HTML之后应用才有效
 	ko.applyBindings(viewModel);
+	setTimeout(function(){
+		//修改数组
+		viewModel.myValues.push('张三');//这里的myValues为什么后面没有括号
+		//html绑定
+		viewModel.details("<em>这是html绑定的内容 <a href='http://www.cnblogs.com/TomXu/archive/2011/11/23/2256854.html' target='_blank'>查看原文</a>.</em>");
+		viewModel.useCss(1);
+		viewModel.useStyle(1);
+		viewModel.aHref("http://www.so.com");
+		viewModel.aTitle("3s之后变成了360 so了");
+	}, 3000);
 });
-function formatPrice(price) {
-    return price == 0 ? "Free" : "$" + price.toFixed(2);
+function showOrHide(flag){
+	viewModel.showMsg(flag);
 }
 </script>
+
+
+
+
 </body>
 </html>
