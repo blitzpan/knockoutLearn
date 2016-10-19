@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../js/knockout-3.4.0.js"></script>
+    <title>第二章：监控属性（Observables）</title>
+</head>
+<body>
+一、ViewModel中绑定的名字是：<span data-bind="text:personName"></span>
+<br />
+二、只是可读的依赖监控属性。依赖监控的全名是（3s后更新）：<span data-bind="text:fullName"></span>
+<br />
+三、可读可写的依赖监控属性。输入依赖监控属性：<br/>
+<input data-bind="value:fullName2"/>
+firstName2：<span data-bind="text:firstName2"></span>
+lastName2：<span data-bind="text:lastName2"></span>
+<br/>
+四、value转换器，自动将用户的输入更新为两位小数并添加货币符号。<br />
+<input data-bind="value:formattedPrice"/><br />
+五、过滤并验证用户输入<br/>
+请输入一个数字：
+<input data-bind="value:attemptedValue"/>
+<span data-bind="visible:!lastInputWasValid()">输入非法</span>
+
+
+
+
+
+
+<br/><b>注意点：</b><br/>
+<textarea readonly="readonly" cols="100" rows="30">
+Observables, DependentObservables, ObservableArray
+1.
+ko.applyBindings(arg1, arg2);
+参数1：想用于声明式绑定的ViewModel。
+参数2：使用data-bind的HTML元素或者容器。
+例如， ko.applyBindings(myViewModel, document.getElementById('someElementId'))。
+它的现在是只有作为someElementId 的元素和子元素才能激活KO功能。
+好处是你可以在同一个页面声明多个view model，用来区分区域。
+
+2.
+Observables：
+将你的model属性声明成observable，它能够通知订阅它的改变以及自动探测到相关的依赖。
+从而使得你的viewModel改变的时候能够自动更新你的界面。
+
+3.
+observables的读和写：
+为了兼容性，所以使所有ko.observable监控的对象都是真实的function函数。
+读监控属性：myViewModel.personName()
+写监控属性：myViewModel.personName("lisi");
+当然也支持链式的写法myViewModel.personName("lisi").personAge(50);
+
+4.
+内置的绑定和模板系统就是使用：
+data-bind
+
+5.
+高级功能：监控属性（Observables）的显示订阅
+注册自己的订阅到监控属性（Observables），可以调用它（监控属性）的subscribe函数。
+
+6.
+依赖监控属性
+如果他所依赖的对象发生了改变，那么他们就会跟着改变。如下面fullName的例子。
+
+7.
+observableArray数组
+一个observableArray仅仅监控他拥有的对象，并在这些对象添加或者删除的时候发出通知。
+</textarea>
+<br/>
+<a href="http://www.cnblogs.com/TomXu/archive/2011/11/22/2256820.html" target="_blank">更多内容查看</a>
+
+<script type="text/javascript">
+//创建一个ViewModel
+var myViewModel = {
+	personName:ko.observable('Bob'),
+	personAge:ko.observable(12),
+	firstName:ko.observable('赢'),
+	lastName:ko.observable('政'),
+	firstName2:ko.observable('潘'),
+	lastName2:ko.observable('东子'),
+	price:ko.observable(0),
+	acceptedNumericValue : ko.observable(123),
+	lastInputWasValid : ko.observable(true),
+};
+var anotherObservableArray = ko.observableArray([
+                                             {name:'张三', type:'1'},
+                                             {name:'李四', type:'2'},
+                                             {name:'王五', type:'3'}
+                                             ]);
+//显示订阅
+var personNameSubscribe = myViewModel.personName.subscribe(function(newValue){
+	console.log("这里是监控的显示订阅。新的名字是=" + newValue);
+});
+//取消显示订阅
+if(false){
+	personNameSubscribe.dispose();//在满足条件的时候取消显示订阅
+}
+//依赖监控属性（这种写法依赖监控属性只是可读）
+//this指的就是第二个参数
+myViewModel.fullName = ko.dependentObservable(function(){
+	return this.firstName() + this.lastName();
+}, myViewModel);
+//可读可写的依赖监控属性
+myViewModel.fullName2 = ko.dependentObservable({
+	read:function(){//read必选
+		return this.firstName2() + this.lastName2();
+	},
+	write:function(value){//可选
+		var length = value.length;
+		if(length>1){
+			this.firstName2(value.substring(0, 1));
+			this.lastName2(value.substring(1));
+		}
+	},
+	owner:myViewModel//可选，如果声明了，那么这个就是read、write中的this。
+});
+//Value转换器
+myViewModel.formattedPrice = ko.dependentObservable({
+	read:function(){
+		return "$" + this.price().toFixed(2);
+	},
+	write:function(value){
+		value = parseFloat( value.replace(/[^\.\d]/g, '') );
+		this.price(isNaN(value)? 0: value);
+	},
+	owner:myViewModel
+});
+//过滤用户的输入
+myViewModel.attemptedValue = ko.dependentObservable({
+	read:function(){
+		return this.acceptedNumericValue();
+	},
+	//read:myViewModel.acceptedNumericValue,//这两种写法都可以
+	write:function(value){
+		if(isNaN(value)){
+			this.lastInputWasValid(false);
+		}else{
+			this.lastInputWasValid(true);
+			this.acceptedNumericValue(value);
+		}
+	},
+	owner:myViewModel
+});
+
+$(function(){
+	//激活ko
+	ko.applyBindings(myViewModel);
+	setTimeout(function(){
+		myViewModel.personName("李四");
+		myViewModel.firstName("潘").lastName('东子');
+		}
+	, 3000);
+});
+</script>
+</body>
+</html>
