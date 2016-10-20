@@ -20,7 +20,7 @@ Knockout»á×èÖ¹Ã°Åİ£¬·ÀÖ¹Ä¬ÈÏµÄÊÂ¼ş¼ÌĞøÖ´ĞĞ¡£ÀıÈç£¬Èç¹ûÄãµã»÷Ò»¸öaÁ¬½Ó£¬ÔÚÖ´ĞĞÍê×
 <br/>
 <b>×¢5£º</b>·ÀÖ¹ÊÂ¼şÃ°Åİ<br/>
 Ä¬ÈÏÇé¿öÏÂ£¬KnockoutÔÊĞíclickÊÂ¼ş¼ÌĞøÔÚ¸ü¸ßÒ»²ãµÄÊÂ¼ş¾ä±úÉÏÃ°ÅİÖ´ĞĞ¡£ÀıÈç£¬Èç¹ûÄãµÄÔªËØºÍ¸¸ÔªËØ¶¼°ó¶¨ÁËclickÊÂ¼ş£¬ÄÇµ±Äãµã»÷¸ÃÔªËØµÄÊ±ºòÁ½¸öÊÂ¼ş¶¼»á´¥·¢µÄ¡£Èç¹ûĞèÒª£¬Äã¿ÉÒÔÍ¨¹ı¶îÍâµÄ°ó¶¨clickBubbleÀ´½ûÖ¹Ã°Åİ¡£<br/>
-ÕâÑùmyButtonHandlerÖ´ĞĞÁËclickÖ®ºó£¬»á·ÀÖ¹ÊÂ¼şÃ°Åİ£¬myDivHandler²»»áÖ´ĞĞ¡£
+ÕâÑùmyButtonHandlerÖ´ĞĞÁËclickÖ®ºó£¬»á·ÀÖ¹ÊÂ¼şÃ°Åİ£¬myDivHandler²»»áÖ´ĞĞ¡£<br/>
 <textarea readonly="readonly" rows="6" cols="100">
 <div data-bind="click: myDivHandler">
     <button data-bind="click: myButtonHandler, clickBubble: false">
@@ -28,11 +28,6 @@ Knockout»á×èÖ¹Ã°Åİ£¬·ÀÖ¹Ä¬ÈÏµÄÊÂ¼ş¼ÌĞøÖ´ĞĞ¡£ÀıÈç£¬Èç¹ûÄãµã»÷Ò»¸öaÁ¬½Ó£¬ÔÚÖ´ĞĞÍê×
     </button>
 </div>
 </textarea>
-
-
-
-
-
 
 <div>ÄúÒÑ¾­µã»÷ÁË<b data-bind="text:numberOfClicks"></b>´Î
 <button data-bind="click:incrementClickCounter">µã»÷ÎŞ²ÎÊı</button>
@@ -44,12 +39,27 @@ Knockout»á×èÖ¹Ã°Åİ£¬·ÀÖ¹Ä¬ÈÏµÄÊÂ¼ş¼ÌĞøÖ´ĞĞ¡£ÀıÈç£¬Èç¹ûÄãµã»÷Ò»¸öaÁ¬½Ó£¬ÔÚÖ´ĞĞÍê×
 		viewModel.clickWithEvent(event);
 	}">µã»÷´øÊÂ¼şÔ´¶ÔÏó£¨ÀûÓÃÄäÃûº¯Êı·½Ê½£©</button>
 </div>
+8.event°ó¶¨£ºevent°ó¶¨ÔÚDOMÔªËØÉÏÌí¼ÓÖ¸¶¨µÄÊÂ¼ş¾ä±úÒÔ±ãÔªËØ±»´¥·¢µÄÊ±ºòÖ´ĞĞ¶¨ÒåµÄJavaScriptº¯Êı¡£
+´ó²¿·ÖÔÚkeypress¡¢mouseover¡¢mouseoutÉÏ¡£<br/>
+<mark>µ«ÊÇÕâ¸öÀı×ÓÀïÃæµÄ·ÃÎÊÊÂ¼şÔ´¶ÔÏó»¹ÊÇÓĞÎÊÌâ¡£</mark>
+<div>
+	<div style="background:red;color:white" data-bind="event:{ mouseover:enableDetails, mouseout:function(event){viewModel.disableDetails(event); } }">Êó±ê´ÓÉÏÃæ»®¹ı</div>
+	<div data-bind="visible:detailEnabled">Details</div>
+</div>
+×¢3£ºÔÊĞíÖ´ĞĞÄ¬ÈÏÊÂ¼ş<br/>
+Èç¹ûÔÚÒ»¸öinput±êÇ©ÉÏ°ó¶¨Ò»¸ökeypressÊÂ¼ş£¬µ±ÄãÊäÈëÄÚÈİµÄÊ±ºò£¬ä¯ÀÀÆ÷Ö»»áµ÷ÓÃÄãµÄº¯Êı¶ø²»ÊÇÌì¼ÛÄãÊäÈëµÄÖµ¡£
+Èç¹ûÄãÏëÈÃÄ¬ÈÏµÄÊÂ¼ş¼ÌĞøÖ´ĞĞ£¬Äã¿ÉÒÔÔÚÄãeventµÄ×Ô¶¨Òåº¯ÊıÀï·µ»Øtrue¡£
+×¢4£º¿ØÖÆthis¾ä±ú<br/>
+×¢5£º·ÀÖ¹ÊÂ¼şÃ°Åİ<br/>
+
+
 
 
 
 <script type="text/javascript">
 var viewModel={
 	numberOfClicks : ko.observable(0),
+	detailEnabled : ko.observable(false),
 	incrementClickCounter:function(parm1, parm2){
 		console.log("½ÓÊÕµ½µÄ²ÎÊı1=" + parm1 + ";½ÓÊÕµ½µÄ²ÎÊı2=" + parm2);
 		var preCount = this.numberOfClicks();
@@ -61,6 +71,22 @@ var viewModel={
 			console.log("shift is down.");
 		}else{
 			console.log("shift is not down.");
+		}
+	},
+	enableDetails:function(event){
+		this.detailEnabled(true);
+		if(event.shiftKey){
+			console.log("shiftKey is down!");
+		}else{
+			console.log("shiftKey is up!");
+		}
+	},
+	disableDetails:function(event){
+		this.detailEnabled(false);
+		if(event.shiftKey){
+			console.log("shiftKey is down!");
+		}else{
+			console.log("shiftKey is up!");
 		}
 	}
 };
